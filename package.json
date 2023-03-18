@@ -1,5 +1,5 @@
 {
-  "name": "idb-storage",
+  "name": "indexeddb-storage",
   "author": "Aleksey Magner",
   "version": "1.0.0",
   "description": "Service for managing IndexedDB local storage.",

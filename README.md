@@ -3,13 +3,13 @@
 ## Установка
 
 ```shell
-npm i idb-storage
+npm i indexeddb-storage
 ```
 
 или
 
 ```shell
-yarn add idb-storage
+yarn add indexeddb-storage
 ```
 
 ## Использование
@@ -18,7 +18,7 @@ yarn add idb-storage
 
 ```javascript
 // '@/services/storage.js'
-import { init, idb } from 'idb-storage';
+import { init, idb } from 'indexeddb-storage';
 
 init('any-store-name', {
   token: 'TOKEN',
