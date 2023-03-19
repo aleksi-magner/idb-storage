@@ -91,15 +91,6 @@ const deepClone = sourceObject => {
 
 /**
  * Служба для управления локальным хранилищем IndexedDB.
- * @type Object
- * @property {Function} get - Чтение
- * @property {Function} set - Запись
- * @property {Function} update - Обновление
- * @property {Function} delete - Удаление
- * @property {Function} clear - Очистка всей базы
- * @property {Function} keys - Получение всех ключей
- * @property {Function} values - Получение всех значений
- * @property {Function} entries - Получение всех ключей и значений
  */
 exports.idb = {
   /**
