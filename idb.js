@@ -190,7 +190,13 @@ exports.idb = {
       value = deepClone(value);
     }
 
-    store.put(callback(value), key);
+    let newValue = callback(value);
+
+    if (typeof newValue === 'object') {
+      newValue = deepClone(newValue);
+    }
+
+    store.put(newValue, key);
 
     return objectStoreRequest(store.transaction);
   },
