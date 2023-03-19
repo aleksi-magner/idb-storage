@@ -1,5 +1,5 @@
 {
-  "name": "indexeddb-storage",
+  "name": "purejs-idb",
   "author": "Aleksey Magner",
   "version": "1.0.0",
   "description": "Service for managing IndexedDB local storage.",
@@ -13,10 +13,6 @@
     "unit": "jest",
     "unit:dev": "jest --onlyChanged --watch"
   },
-  "dependencies": {
-    "idb": "^7.1.1",
-    "purejs-helpers": "^1.1.6"
-  },
   "devDependencies": {
     "@babel/core": "^7.21.3",
     "@babel/preset-env": "^7.20.2",
@@ -28,7 +24,6 @@
     "gulp-babel": "^8.0.0",
     "gulp-plumber": "^1.2.1",
     "gulp-rename": "^2.0.0",
-    "gulp-sourcemaps": "^3.0.0",
     "jest": "^29.5.0",
     "jest-environment-jsdom": "^29.5.0",
     "jsdom": "^21.1.1",

@@ -1,116 +1,385 @@
-import { jest, describe, test, expect } from '@jest/globals';
+import { afterEach, describe, test, expect } from '@jest/globals';
 
-import { init, idb } from './idb';
+import { initDatabase, idb, deleteDatabase } from './idb';
 
 describe('idb.js', () => {
-  test('check', async () => {
-    const { error } = console;
+  afterEach(() => {
+    deleteDatabase();
+  });
 
-    console.error = jest.fn();
-
-    const database = idb('key');
-
+  test('initDatabase', async () => {
     try {
-      await database.get();
+      await idb.get('key');
     } catch (err) {
       expect(err).toEqual(
-        new Error('[IndexedDB]. The service has not been initialized. Run init()'),
+        new Error(
+          '[IndexedDB]. The service has not been initialized. Run initDatabase(<DBName>, <StoreName>)',
+        ),
       );
     }
 
     try {
-      init('any-store');
+      await initDatabase('');
 
-      await database.get();
+      await idb.get('key');
     } catch (err) {
-      expect(err).toEqual(
-        new Error('[IndexedDB]. The service has not been initialized. Run init()'),
-      );
+      expect(err).toEqual(new Error('[IndexedDB]. The service has not been initialized. Set name'));
     }
 
     try {
-      init('any-store', {});
+      await initDatabase('any-db');
 
-      await database.get();
+      await idb.get('key');
     } catch (err) {
-      expect(err).toEqual(
-        new Error('[IndexedDB]. The service has not been initialized. Run init()'),
-      );
+      expect(err).toEqual(new Error('[IndexedDB]. The service has not been initialized. Set name'));
     }
 
-    init('any-store', { any: 'key' });
+    await initDatabase('any-db', 'any-store', 2);
 
-    expect(console.error).not.toBeCalled();
+    const value = await idb.get('key');
 
-    const invalid = await idb('key').get();
+    expect(value).toBeUndefined();
 
-    expect(invalid).toBeUndefined();
+    try {
+      await initDatabase('any-db', 'any-store', 1);
+    } catch (err) {
+      expect(err).toEqual(new Error('[IndexedDB]. VersionError'));
+    }
+  });
 
-    expect(console.error).toBeCalledTimes(1);
-    expect(console.error).toBeCalledWith('[IndexedDB]. Invalid key');
+  test('get', async () => {
+    await initDatabase('any-db', 'any-store', 2);
 
-    await idb('key').set('any');
+    try {
+      await idb.get(42);
+    } catch (err) {
+      expect(err).toEqual(new Error('[IndexedDB]. GET. Wrong params type'));
+    }
 
-    expect(console.error).toBeCalledTimes(2);
-    expect(console.error).toBeCalledWith('[IndexedDB]. Invalid key');
+    try {
+      await idb.get({});
+    } catch (err) {
+      expect(err).toEqual(new Error('[IndexedDB]. GET. Wrong params type'));
+    }
 
-    await idb('key').remove();
-
-    expect(console.error).toBeCalledTimes(3);
-    expect(console.error).toBeCalledWith('[IndexedDB]. Invalid key');
-
-    const valid = await idb('any').get();
-
-    expect(valid).toBeUndefined();
-
-    await idb('any').set('new value');
-
-    const value = await idb('any').get();
-
-    expect(value).toBe('new value');
-
-    const object = {
-      a: {
-        b: {
-          c: 42,
-        },
-        d: [1, 2, 3],
+    await idb.set({
+      key1: 'string',
+      key2: [1, 2, 3],
+      key3: {
+        a: 'any',
       },
+    });
+
+    const key1 = await idb.get('key1');
+
+    expect(key1).toBe('string');
+
+    const manyKeys = await idb.get(['key3', 'key1']);
+
+    expect(manyKeys).toEqual([
+      {
+        a: 'any',
+      },
+      'string',
+    ]);
+  });
+
+  test('set', async () => {
+    await initDatabase('any-db', 'any-store', 2);
+
+    try {
+      await idb.set();
+    } catch (err) {
+      expect(err).toEqual(new Error('[IndexedDB]. SET. Wrong params type'));
+    }
+
+    try {
+      await idb.set([]);
+    } catch (err) {
+      expect(err).toEqual(new Error('[IndexedDB]. SET. Wrong params type'));
+    }
+
+    try {
+      await idb.set('42', 'value');
+    } catch (err) {
+      expect(err).toEqual(new Error('[IndexedDB]. SET. Wrong params type'));
+    }
+
+    const empty = await idb.get('key');
+
+    expect(empty).toBeUndefined();
+
+    await idb.set({ key: 'any' });
+
+    const value = await idb.get('key');
+
+    expect(value).toBe('any');
+
+    const string = 'string value';
+    const number = 42;
+    const bool = true;
+
+    const sourceObject = {
+      foo: 'bar',
+      obj: {
+        a: 1,
+        b: 2,
+      },
+      array: [
+        {
+          id: 1,
+          text: 42,
+        },
+        'string',
+      ],
+      any: undefined,
+      Null: null,
+      number: 0,
+      date: new Date('2023-03-20'),
     };
 
-    await idb('any').set(object);
-
-    object.a.b.c = 13;
-    object.a.d[1] = 42;
-
-    expect(object).toEqual({
-      a: {
-        b: {
-          c: 13,
-        },
-        d: [1, 42, 3],
+    const arr = [
+      {
+        id: 1,
+        text: 42,
       },
+      'string',
+    ];
+
+    await idb.set({
+      string,
+      number,
+      bool,
+      sourceObject,
+      arr,
     });
 
-    const storeObject = await idb('any').get();
+    sourceObject.obj.a = 4;
+    sourceObject.array[0].id = 4;
+    sourceObject.date.setFullYear(3000);
 
-    expect(storeObject).toEqual({
-      a: {
-        b: {
-          c: 42,
-        },
-        d: [1, 2, 3],
+    arr[0].id = 7;
+
+    expect(sourceObject).toEqual({
+      foo: 'bar',
+      obj: {
+        a: 4,
+        b: 2,
       },
+      array: [
+        {
+          id: 4,
+          text: 42,
+        },
+        'string',
+      ],
+      any: undefined,
+      Null: null,
+      number: 0,
+      date: new Date('3000-03-20'),
     });
 
-    await idb('any').remove();
+    const storeValues = await idb.get([
+      'invalid key',
+      'string',
+      'number',
+      'bool',
+      'sourceObject',
+      'arr',
+    ]);
 
-    const clearedValue = await idb('any').get();
+    expect(storeValues).toEqual([
+      undefined,
+      'string value',
+      42,
+      true,
+      {
+        foo: 'bar',
+        obj: {
+          a: 1,
+          b: 2,
+        },
+        array: [
+          {
+            id: 1,
+            text: 42,
+          },
+          'string',
+        ],
+        any: undefined,
+        Null: null,
+        number: 0,
+        date: new Date('2023-03-20'),
+      },
+      [
+        {
+          id: 1,
+          text: 42,
+        },
+        'string',
+      ],
+    ]);
+  });
 
-    expect(clearedValue).toBeUndefined();
+  test('update', async () => {
+    await initDatabase('any-db', 'any-store', 2);
 
-    expect(console.error).toBeCalledTimes(3);
+    try {
+      await idb.update();
+    } catch (err) {
+      expect(err).toEqual(new Error('[IndexedDB]. UPDATE. Wrong params type'));
+    }
 
-    console.error = error;
+    try {
+      await idb.update(42, () => {});
+    } catch (err) {
+      expect(err).toEqual(new Error('[IndexedDB]. UPDATE. Wrong params type'));
+    }
+
+    try {
+      await idb.update('42', 'wrong');
+    } catch (err) {
+      expect(err).toEqual(new Error('[IndexedDB]. UPDATE. Wrong params type'));
+    }
+
+    const empty = await idb.get('number');
+
+    expect(empty).toBeUndefined();
+
+    await idb.update('number', value => (value || 0) + 1);
+    await idb.update('number', value => (value || 0) + 1);
+    await idb.update('number', value => (value || 0) + 40);
+
+    const number = await idb.get('number');
+
+    expect(number).toBe(42);
+
+    await idb.update('number', value => ({ key: value }));
+
+    const object = await idb.get('number');
+
+    expect(object).toEqual({ key: 42 });
+
+    await idb.update('number', value => ({
+      ...value,
+      key2: 1,
+    }));
+
+    const newObject = await idb.get('number');
+
+    expect(newObject).toEqual({
+      key: 42,
+      key2: 1,
+    });
+  });
+
+  test('delete', async () => {
+    await initDatabase('any-db', 'any-store');
+
+    try {
+      await idb.delete();
+    } catch (err) {
+      expect(err).toEqual(new Error('[IndexedDB]. DELETE. Wrong params type'));
+    }
+
+    try {
+      await idb.delete(42);
+    } catch (err) {
+      expect(err).toEqual(new Error('[IndexedDB]. DELETE. Wrong params type'));
+    }
+
+    try {
+      await idb.delete({});
+    } catch (err) {
+      expect(err).toEqual(new Error('[IndexedDB]. DELETE. Wrong params type'));
+    }
+
+    await idb.set({
+      1: 1,
+      2: 2,
+      3: 3,
+    });
+
+    const allKeys = await idb.get(['1', '2', '3']);
+
+    expect(allKeys).toEqual([1, 2, 3]);
+
+    await idb.delete('3');
+
+    const someKeys = await idb.get(['1', '2', '3']);
+
+    expect(someKeys).toEqual([1, 2, undefined]);
+
+    await idb.delete(['1', '2', '3']);
+
+    const empty = await idb.get(['1', '2', '3']);
+
+    expect(empty).toEqual([undefined, undefined, undefined]);
+  });
+
+  test('clear', async () => {
+    await initDatabase('any-db', 'any-store', 2);
+
+    await idb.set({
+      1: 1,
+      2: 2,
+      3: 3,
+    });
+
+    const allKeys = await idb.get(['1', '2', '3']);
+
+    expect(allKeys).toEqual([1, 2, 3]);
+
+    await idb.clear();
+
+    const empty = await idb.get(['1', '2', '3']);
+
+    expect(empty).toEqual([undefined, undefined, undefined]);
+  });
+
+  test('keys', async () => {
+    await initDatabase('any-db', 'any-store', 2);
+
+    await idb.set({
+      1: 1,
+      2: 2,
+      3: 3,
+    });
+
+    const allKeys = await idb.keys();
+
+    expect(allKeys).toEqual(['1', '2', '3']);
+  });
+
+  test('values', async () => {
+    await initDatabase('any-db', 'any-store');
+
+    await idb.set({
+      1: 4,
+      2: 5,
+      3: 6,
+    });
+
+    const allValues = await idb.values();
+
+    expect(allValues).toEqual([4, 5, 6]);
+  });
+
+  test('entries', async () => {
+    await initDatabase('any-db', 'any-store');
+
+    await idb.set({
+      1: 4,
+      2: 5,
+      3: 6,
+    });
+
+    const entries = await idb.entries();
+
+    expect(entries).toEqual({
+      1: 4,
+      2: 5,
+      3: 6,
+    });
   });
 });
