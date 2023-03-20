@@ -22,7 +22,14 @@ const objectStoreRequest = request =>
     request.onerror = () => reject(`[IndexedDB]. ${request.error}`);
   });
 
-/** @function initDatabase */
+/**
+ * Инициализация сервиса. Открытие базы данных
+ * @function initDatabase
+ * @param {string} dbName - Имя базы данных
+ * @param {string} storeName - Имя хранилища
+ * @param {number} [version=1] - Номер версии базы данных
+ * @return {Promise}
+ */
 const initDatabase = (dbName, storeName, version = 1) => {
   if (!dbName || !storeName) {
     throw new Error('[IndexedDB]. The service has not been initialized. Set name');
@@ -54,7 +61,10 @@ const initDatabase = (dbName, storeName, version = 1) => {
  */
 exports.initDatabase = initDatabase
 
-/** @function deleteDatabase */
+/**
+ * Закрытие и удаление базы данных
+ * @function deleteDatabase
+ */
 const deleteDatabase = () => {
   const { name } = DB;
 
