@@ -22,15 +22,8 @@ const objectStoreRequest = request =>
     request.onerror = () => reject(`[IndexedDB]. ${request.error}`);
   });
 
-/**
- * Инициализация сервиса. Открытие базы данных
- * @function initDatabase
- * @param {string} dbName - Имя базы данных
- * @param {string} storeName - Имя хранилища
- * @param {number} [version=1] - Номер версии базы данных
- * @return {Promise}
- */
-exports.initDatabase = (dbName, storeName, version = 1) => {
+/** @function initDatabase */
+const initDatabase = (dbName, storeName, version = 1) => {
   if (!dbName || !storeName) {
     throw new Error('[IndexedDB]. The service has not been initialized. Set name');
   }
@@ -51,18 +44,29 @@ exports.initDatabase = (dbName, storeName, version = 1) => {
       throw new Error(error);
     });
 };
-
 /**
- * Закрытие и удаление базы данных
- * @function deleteDatabase
+ * Инициализация сервиса. Открытие базы данных
+ * @function initDatabase
+ * @param {string} dbName - Имя базы данных
+ * @param {string} storeName - Имя хранилища
+ * @param {number} [version=1] - Номер версии базы данных
+ * @return {Promise}
  */
-exports.deleteDatabase = () => {
+exports.initDatabase = initDatabase
+
+/** @function deleteDatabase */
+const deleteDatabase = () => {
   const { name } = DB;
 
   DB.close();
 
   window.indexedDB.deleteDatabase(name);
 };
+/**
+ * Закрытие и удаление базы данных
+ * @function deleteDatabase
+ */
+exports.deleteDatabase = deleteDatabase;
 
 /**
  * Рекурсивное (глубокое) копирование объекта (массива)
@@ -89,13 +93,10 @@ const deepClone = sourceObject => {
   return clone;
 };
 
-/**
- * Служба для управления локальным хранилищем IndexedDB.
- */
-exports.idb = {
+const idb = {
   /**
    * Проверка инициализации базы данных
-   * @function
+   * @method checkDB
    */
   checkDB() {
     if (!DB) {
@@ -106,7 +107,7 @@ exports.idb = {
   },
   /**
    * Получение одного или нескольких значений по ключам из хранилища IndexedDB.
-   * @method
+   * @method get
    * @param {string|string[]} keys
    * @return {Promise<*>}
    */
@@ -129,7 +130,7 @@ exports.idb = {
   },
   /**
    * Добавление одного или нескольких значений по ключам в хранилище IndexedDB.
-   * @method
+   * @method set
    * @param {Object.<string, *>} pairs
    * @return {Promise}
    */
@@ -162,7 +163,7 @@ exports.idb = {
   },
   /**
    * Обновление значения по ключу в хранилище IndexedDB.
-   * @method
+   * @method update
    * @async
    * @param {string} key
    * @param {Function} callback - Функция обратного вызова, которая принимает старое значение и возвращает новое значение
@@ -198,7 +199,7 @@ exports.idb = {
   },
   /**
    * Удаление одного или нескольких ключей в хранилище IndexedDB.
-   * @method
+   * @method delete
    * @param {string|string[]} keys
    * @return {Promise}
    */
@@ -223,7 +224,7 @@ exports.idb = {
   },
   /**
    * Очистка всех значений в хранилище IndexedDB.
-   * @method
+   * @method clear
    * @return {Promise}
    */
   clear() {
@@ -237,7 +238,7 @@ exports.idb = {
   },
   /**
    * Получение списка всех ключей из хранилища IndexedDB.
-   * @method
+   * @method keys
    * @return {Promise<string[]>}
    */
   keys() {
@@ -249,7 +250,7 @@ exports.idb = {
   },
   /**
    * Получение списка всех значений из хранилища IndexedDB.
-   * @method
+   * @method values
    * @return {Promise<*[]>}
    */
   values() {
@@ -261,7 +262,7 @@ exports.idb = {
   },
   /**
    * Получение объекта со всеми ключами и значениями из хранилища IndexedDB.
-   * @method
+   * @method entries
    * @async
    * @return {Object.<string, *>}
    */
@@ -282,3 +283,5 @@ exports.idb = {
     return entries;
   },
 };
+/** Служба для управления локальным хранилищем IndexedDB. */
+exports.idb = idb;
