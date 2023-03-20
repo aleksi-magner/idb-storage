@@ -24,7 +24,7 @@ const objectStoreRequest = request =>
 
 /**
  * Инициализация сервиса. Открытие базы данных
- * @function
+ * @function initDatabase
  * @param {string} dbName - Имя базы данных
  * @param {string} storeName - Имя хранилища
  * @param {number} [version=1] - Номер версии базы данных
@@ -54,7 +54,7 @@ exports.initDatabase = (dbName, storeName, version = 1) => {
 
 /**
  * Закрытие и удаление базы данных
- * @function
+ * @function deleteDatabase
  */
 exports.deleteDatabase = () => {
   const { name } = DB;
