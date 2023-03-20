@@ -184,9 +184,9 @@ exports.idb = {
 
     const store = DB.transaction(objectStoreName, 'readwrite').objectStore(objectStoreName);
 
-    const value = await objectStoreRequest(store.get(key));
+    const storeValue = await objectStoreRequest(store.get(key));
 
-    let updatedValue = callback(value);
+    let updatedValue = callback(storeValue);
 
     if (typeof updatedValue === 'object') {
       updatedValue = deepClone(updatedValue);
