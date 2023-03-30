@@ -1,7 +1,7 @@
 {
   "name": "purejs-idb",
   "author": "Aleksey Magner",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Service for managing IndexedDB local storage.",
   "license": "MIT",
   "repository": {

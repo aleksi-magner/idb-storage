@@ -103,7 +103,7 @@ const deepClone = sourceObject => {
   return clone;
 };
 
-const idb = {
+const idb = Object.freeze({
   /**
    * Проверка инициализации базы данных
    * @method checkDB
@@ -292,6 +292,6 @@ const idb = {
 
     return entries;
   },
-};
+});
 /** Служба для управления локальным хранилищем IndexedDB. */
 exports.idb = idb;
