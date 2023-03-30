@@ -128,7 +128,7 @@ const idb = Object.freeze({
       throw new Error('[IndexedDB]. GET. Wrong params type');
     }
 
-    this.checkDB();
+    idb.checkDB();
 
     const store = DB.transaction(objectStoreName, 'readonly').objectStore(objectStoreName);
 
@@ -153,7 +153,7 @@ const idb = Object.freeze({
       throw new Error('[IndexedDB]. SET. Wrong params type');
     }
 
-    this.checkDB();
+    idb.checkDB();
 
     const store = DB.transaction(objectStoreName, 'readwrite').objectStore(objectStoreName);
 
@@ -191,7 +191,7 @@ const idb = Object.freeze({
       throw new Error('[IndexedDB]. UPDATE. Wrong params type');
     }
 
-    this.checkDB();
+    idb.checkDB();
 
     const store = DB.transaction(objectStoreName, 'readwrite').objectStore(objectStoreName);
 
@@ -220,7 +220,7 @@ const idb = Object.freeze({
       throw new Error('[IndexedDB]. DELETE. Wrong params type');
     }
 
-    this.checkDB();
+    idb.checkDB();
 
     const store = DB.transaction(objectStoreName, 'readwrite').objectStore(objectStoreName);
 
@@ -238,7 +238,7 @@ const idb = Object.freeze({
    * @return {Promise}
    */
   clear() {
-    this.checkDB();
+    idb.checkDB();
 
     const store = DB.transaction(objectStoreName, 'readwrite').objectStore(objectStoreName);
 
@@ -252,7 +252,7 @@ const idb = Object.freeze({
    * @return {Promise<string[]>}
    */
   keys() {
-    this.checkDB();
+    idb.checkDB();
 
     const store = DB.transaction(objectStoreName, 'readonly').objectStore(objectStoreName);
 
@@ -264,7 +264,7 @@ const idb = Object.freeze({
    * @return {Promise<*[]>}
    */
   values() {
-    this.checkDB();
+    idb.checkDB();
 
     const store = DB.transaction(objectStoreName, 'readonly').objectStore(objectStoreName);
 
@@ -277,7 +277,7 @@ const idb = Object.freeze({
    * @return {Object.<string, *>}
    */
   async entries() {
-    this.checkDB();
+    idb.checkDB();
 
     const store = DB.transaction(objectStoreName, 'readonly').objectStore(objectStoreName);
 
