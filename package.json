@@ -1,7 +1,7 @@
 {
   "name": "purejs-idb",
   "author": "Aleksey Magner",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "Service for managing IndexedDB local storage.",
   "license": "MIT",
   "repository": {
@@ -17,8 +17,7 @@
   ],
   "type": "module",
   "types": "dist/types/index.d.ts",
-  "main": "dist/idb.umd.js",
-  "module": "dist/idb.js",
+  "main": "dist/idb.js",
   "exports": {
     ".": {
       "import": "./dist/idb.js",
