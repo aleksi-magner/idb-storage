@@ -3,8 +3,6 @@ import { resolve } from 'path';
 import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
 
-import pkg from './package.json';
-
 export default defineConfig({
   plugins: [dts({ outputDir: 'dist/types' })],
   test: {
@@ -40,8 +38,8 @@ export default defineConfig({
     lib: {
       name: 'idb',
       entry: resolve(__dirname, 'src/index.ts'),
-      formats: ['iife'],
-      fileName: () => `${pkg.name}.js`,
+      formats: ['es', 'umd'],
+      fileName: format => (format !== 'es' ? `idb.${format}.js` : 'idb.js'),
     },
   },
 });
