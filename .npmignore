@@ -22,12 +22,12 @@ package-lock.json
 yarn.lock
 
 # project files
-gulpfile.esm.js
-.browserslistrc
 .editorconfig
 .gitignore
-.prettierrc.js
-babel.config.js
-idb.spec.js
-jest.config.js
-idb.js
+.eslintignore
+.eslintrc
+.prettierrc
+src/*
+tests/*
+tsconfig.json
+vite.config.ts
