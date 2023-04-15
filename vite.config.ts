@@ -18,7 +18,7 @@ export default defineConfig({
     lib: {
       name: 'idbService',
       entry: resolve(__dirname, './src/index.ts'),
-      formats: ['es', 'umd'],
+      formats: ['es', 'cjs'],
     },
   },
   test: {
