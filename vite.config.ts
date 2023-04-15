@@ -11,14 +11,12 @@ export default defineConfig({
     }),
   ],
   build: {
-    outDir: 'dist',
-    target: ['es2017'],
     minify: true,
     reportCompressedSize: true,
     lib: {
-      name: 'idbService',
       entry: resolve(__dirname, './src/index.ts'),
-      formats: ['es', 'cjs'],
+      formats: ['es'],
+      fileName: 'index',
     },
   },
   test: {
