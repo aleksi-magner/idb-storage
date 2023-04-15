@@ -1,7 +1,7 @@
 {
   "name": "purejs-idb",
   "author": "Aleksey Magner",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Service for managing IndexedDB local storage.",
   "license": "MIT",
   "repository": {
@@ -19,12 +19,19 @@
     "package.json"
   ],
   "type": "module",
-  "types": "dist/index.d.ts",
-  "main": "dist/index.js",
+  "types": "./dist/index.d.ts",
+  "main": "./dist/index.umd.js",
+  "module": "./dist/index.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.umd.js"
+    }
+  },
   "scripts": {
     "unit": "vitest run",
     "unit:dev": "vitest --logHeapUsage --watch --changed",
-    "build": "tsc && terser --compress --mangle --output dist/index.js -- dist/index.js",
+    "build": "tsc && vite build",
     "deploy": "git push && git push --tags && npm publish",
     "patch": "npm run build && git add . && npm version patch --force -m 'Upgrade to %s' && npm run deploy",
     "minor": "npm run build && git add . && npm version minor --force -m 'Upgrade to %s' && npm run deploy",
@@ -35,9 +42,9 @@
     "fake-indexeddb": "^4.0.1",
     "happy-dom": "^9.6.1",
     "prettier": "^2.8.7",
-    "terser": "^5.16.9",
     "typescript": "^5.0.4",
     "vite": "^4.2.1",
+    "vite-plugin-dts": "^2.2.0",
     "vitest": "^0.30.1"
   }
 }
