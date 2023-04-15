@@ -1,11 +1,23 @@
-import { afterEach, describe, test, expect } from '@jest/globals';
+import { afterEach, describe, test, expect } from 'vitest';
 
-import { initDatabase, idb, deleteDatabase } from './index.js';
+import { initDatabase, idb, deleteDatabase } from './index';
 
-describe('idb.js', () => {
+type SourceObject = {
+  foo: string;
+  obj: { a: number; b: number };
+  array: [{ id: number; text: number }, string];
+  any: undefined;
+  Null: null;
+  number: number;
+  date: Date;
+};
+
+describe('idb', () => {
   afterEach(() => {
     deleteDatabase();
   });
+
+  test('deleteDatabase', async () => {});
 
   test('initDatabase', async () => {
     try {
@@ -19,7 +31,7 @@ describe('idb.js', () => {
     }
 
     try {
-      await initDatabase('');
+      await initDatabase('', '');
 
       await idb.get('key');
     } catch (err) {
@@ -27,7 +39,7 @@ describe('idb.js', () => {
     }
 
     try {
-      await initDatabase('any-db');
+      await initDatabase('any-db', '');
 
       await idb.get('key');
     } catch (err) {
@@ -50,18 +62,6 @@ describe('idb.js', () => {
   test('get', async () => {
     await initDatabase('any-db', 'any-store', 2);
 
-    try {
-      await idb.get(42);
-    } catch (err) {
-      expect(err).toEqual(new Error('[IndexedDB]. GET. Wrong params type'));
-    }
-
-    try {
-      await idb.get({});
-    } catch (err) {
-      expect(err).toEqual(new Error('[IndexedDB]. GET. Wrong params type'));
-    }
-
     await idb.set({
       key1: 'string',
       key2: [1, 2, 3],
@@ -76,31 +76,14 @@ describe('idb.js', () => {
 
     const manyKeys = await idb.get(['key3', 'key1']);
 
-    expect(manyKeys).toEqual([
-      {
-        a: 'any',
-      },
-      'string',
-    ]);
+    expect(manyKeys).toEqual([{ a: 'any' }, 'string']);
   });
 
   test('set', async () => {
     await initDatabase('any-db', 'any-store', 2);
 
     try {
-      await idb.set();
-    } catch (err) {
-      expect(err).toEqual(new Error('[IndexedDB]. SET. Wrong params type'));
-    }
-
-    try {
-      await idb.set([]);
-    } catch (err) {
-      expect(err).toEqual(new Error('[IndexedDB]. SET. Wrong params type'));
-    }
-
-    try {
-      await idb.set('42', 'value');
+      await idb.set({});
     } catch (err) {
       expect(err).toEqual(new Error('[IndexedDB]. SET. Wrong params type'));
     }
@@ -115,11 +98,11 @@ describe('idb.js', () => {
 
     expect(value).toBe('any');
 
-    const string = 'string value';
-    const number = 42;
-    const bool = true;
+    const string: string = 'string value';
+    const number: number = 42;
+    const bool: boolean = true;
 
-    const sourceObject = {
+    const sourceObject: SourceObject = {
       foo: 'bar',
       obj: {
         a: 1,
@@ -138,7 +121,7 @@ describe('idb.js', () => {
       date: new Date('2023-03-20'),
     };
 
-    const arr = [
+    const arr: [{ id: number; text: number }, string] = [
       {
         id: 1,
         text: 42,
@@ -224,24 +207,6 @@ describe('idb.js', () => {
   test('update', async () => {
     await initDatabase('any-db', 'any-store', 2);
 
-    try {
-      await idb.update();
-    } catch (err) {
-      expect(err).toEqual(new Error('[IndexedDB]. UPDATE. Wrong params type'));
-    }
-
-    try {
-      await idb.update(42, () => {});
-    } catch (err) {
-      expect(err).toEqual(new Error('[IndexedDB]. UPDATE. Wrong params type'));
-    }
-
-    try {
-      await idb.update('42', 'wrong');
-    } catch (err) {
-      expect(err).toEqual(new Error('[IndexedDB]. UPDATE. Wrong params type'));
-    }
-
     const empty = await idb.get('number');
 
     expect(empty).toBeUndefined();
@@ -275,24 +240,6 @@ describe('idb.js', () => {
 
   test('delete', async () => {
     await initDatabase('any-db', 'any-store');
-
-    try {
-      await idb.delete();
-    } catch (err) {
-      expect(err).toEqual(new Error('[IndexedDB]. DELETE. Wrong params type'));
-    }
-
-    try {
-      await idb.delete(42);
-    } catch (err) {
-      expect(err).toEqual(new Error('[IndexedDB]. DELETE. Wrong params type'));
-    }
-
-    try {
-      await idb.delete({});
-    } catch (err) {
-      expect(err).toEqual(new Error('[IndexedDB]. DELETE. Wrong params type'));
-    }
 
     await idb.set({
       1: 1,
