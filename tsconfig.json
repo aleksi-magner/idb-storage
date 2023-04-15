@@ -4,6 +4,7 @@
     "target": "es2015",
     "module": "ESNext",
     "declaration": true,
+    "outDir": "./dist",
     "noEmit": false,
     "strict": true,
     "noImplicitAny": true,
