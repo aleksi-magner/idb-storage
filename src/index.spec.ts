@@ -1,6 +1,6 @@
 import { afterEach, describe, test, expect } from 'vitest';
 
-import { initDatabase, idb, deleteDatabase } from '../src';
+import { initDatabase, idb, deleteDatabase } from './index';
 
 interface SourceObject {
   foo: string;

@@ -4,10 +4,10 @@ import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
 
 export default defineConfig({
-  plugins: [dts({ outputDir: 'dist/types' })],
+  plugins: [dts()],
   test: {
     environment: 'happy-dom',
-    dir: 'tests/',
+    dir: 'src/',
     setupFiles: ['fake-indexeddb/auto'],
     passWithNoTests: true,
     watch: false,
@@ -27,8 +27,7 @@ export default defineConfig({
       perFile: false,
       excludeNodeModules: true,
       include: ['**/src/**'],
-      reportsDirectory: 'tests/__coverage__',
-      reporter: ['text', 'json-summary'],
+      reporter: ['text'],
     },
   },
   build: {
@@ -38,8 +37,8 @@ export default defineConfig({
     lib: {
       name: 'idb',
       entry: resolve(__dirname, 'src/index.ts'),
-      formats: ['es', 'umd'],
-      fileName: format => (format !== 'es' ? `idb.${format}.js` : 'idb.js'),
+      formats: ['cjs'],
+      fileName: () => 'index.js',
     },
   },
 });
