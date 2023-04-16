@@ -1,3 +1,5 @@
+type Init = (dbName: string, storeName: string, version?: number) => Promise<void>;
+
 type IDBMethods = {
   /**
    * Получение одного или нескольких значений по ключам из хранилища IndexedDB.
@@ -80,7 +82,11 @@ const transactionRequest = (request: IDBTransaction): Promise<undefined> =>
  *   app.mount('#app');
  * });
  */
-exports.initDatabase = (dbName: string, storeName: string, version: number = 1): Promise<void> => {
+export const initDatabase: Init = (
+  dbName: string,
+  storeName: string,
+  version: number = 1,
+): Promise<void> => {
   if (!dbName || !storeName) {
     throw new Error('[IndexedDB]. The service has not been initialized. Set name');
   }
@@ -103,7 +109,7 @@ exports.initDatabase = (dbName: string, storeName: string, version: number = 1):
 };
 
 /** Закрытие и удаление базы данных */
-exports.deleteDatabase = (): void => {
+export const deleteDatabase = (): void => {
   if (!DB) {
     return;
   }
@@ -146,7 +152,7 @@ const deepClone = (sourceObject: any): any => {
 };
 
 /** Служба для управления локальным хранилищем IndexedDB */
-exports.idb = <IDBMethods>Object.freeze({
+export const idb: Readonly<IDBMethods> = Object.freeze({
   get(keys: string | Array<string>): Promise<any | any[]> {
     checkDB();
 

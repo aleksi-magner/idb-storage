@@ -1,25 +1,6 @@
-/// <reference types="vitest" />
-import { resolve } from 'path';
-import { defineConfig } from 'vite';
-import dts from 'vite-plugin-dts';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-  plugins: [
-    dts({
-      insertTypesEntry: true,
-      outputDir: './dist',
-    }),
-  ],
-  build: {
-    minify: true,
-    reportCompressedSize: true,
-    lib: {
-      entry: resolve(__dirname, './src/index.ts'),
-      formats: ['umd'],
-      name: 'idbService',
-      fileName: 'index',
-    },
-  },
   test: {
     environment: 'happy-dom',
     dir: './src/',

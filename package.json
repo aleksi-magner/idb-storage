@@ -1,13 +1,17 @@
 {
   "name": "purejs-idb",
-  "author": "Aleksey Magner",
-  "version": "1.2.15",
+  "version": "1.2.16",
   "description": "Service for managing IndexedDB local storage.",
+  "author": "Aleksi Magner",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/aleksi-magner/purejs-idb.git"
   },
+  "bugs": {
+    "url": "https://github.com/aleksi-magner/purejs-idb/issues"
+  },
+  "homepage": "https://github.com/aleksi-magner/purejs-idb#readme",
   "keywords": [
     "idb",
     "IndexedDB"
@@ -16,26 +20,30 @@
     "dist",
     "README.md"
   ],
-  "main": "dist/index.umd.js",
+  "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "clean": "rm -rf dist",
     "unit": "vitest run --reporter verbose",
     "unit:dev": "vitest --logHeapUsage --watch --changed",
-    "build": "npm run clean && tsc && vite build && git add .",
-    "deploy": "git push && git push --tags && npm publish",
+    "build": "gulp",
+    "deploy": "git add . && git push && git push --tags && npm publish",
     "patch": "npm run build && npm version patch --force -m 'Upgrade to %s' && npm run deploy",
     "minor": "npm run build && npm version minor --force -m 'Upgrade to %s' && npm run deploy",
     "major": "npm run build && npm version major --force -m 'Upgrade to %s' && npm run deploy"
   },
   "devDependencies": {
+    "@babel/core": "^7.21.4",
+    "@babel/preset-env": "^7.21.4",
     "@vitest/coverage-c8": "^0.30.1",
+    "esm": "^3.2.25",
     "fake-indexeddb": "^4.0.1",
-    "happy-dom": "^9.6.1",
+    "gulp": "^4.0.2",
+    "gulp-babel": "^8.0.0",
+    "gulp-plumber": "^1.2.1",
+    "gulp-typescript": "^5.0.1",
+    "happy-dom": "^9.7.1",
     "prettier": "^2.8.7",
     "typescript": "^5.0.4",
-    "vite": "^4.2.1",
-    "vite-plugin-dts": "^2.2.0",
     "vitest": "^0.30.1"
   }
 }
