@@ -15,7 +15,8 @@ export default defineConfig({
     reportCompressedSize: true,
     lib: {
       entry: resolve(__dirname, './src/index.ts'),
-      formats: ['cjs'],
+      formats: ['umd'],
+      name: 'idbService',
       fileName: 'index',
     },
   },

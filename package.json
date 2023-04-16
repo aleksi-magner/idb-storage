@@ -1,7 +1,7 @@
 {
   "name": "purejs-idb",
   "author": "Aleksey Magner",
-  "version": "1.2.13",
+  "version": "1.2.14",
   "description": "Service for managing IndexedDB local storage.",
   "license": "MIT",
   "repository": {
@@ -19,13 +19,14 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
+    "clean": "rm -rf dist",
     "unit": "vitest run --reporter verbose",
     "unit:dev": "vitest --logHeapUsage --watch --changed",
-    "build": "tsc && vite build",
+    "build": "npm run clean && tsc && vite build && git add .",
     "deploy": "git push && git push --tags && npm publish",
-    "patch": "npm run build && git add . && npm version patch --force -m 'Upgrade to %s' && npm run deploy",
-    "minor": "npm run build && git add . && npm version minor --force -m 'Upgrade to %s' && npm run deploy",
-    "major": "npm run build && git add . && npm version major --force -m 'Upgrade to %s' && npm run deploy"
+    "patch": "npm run build && npm version patch --force -m 'Upgrade to %s' && npm run deploy",
+    "minor": "npm run build && npm version minor --force -m 'Upgrade to %s' && npm run deploy",
+    "major": "npm run build && npm version major --force -m 'Upgrade to %s' && npm run deploy"
   },
   "devDependencies": {
     "@vitest/coverage-c8": "^0.30.1",
