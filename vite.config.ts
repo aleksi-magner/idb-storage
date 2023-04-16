@@ -14,8 +14,8 @@ export default defineConfig({
     minify: true,
     reportCompressedSize: true,
     lib: {
-      name: 'idbService',
       entry: resolve(__dirname, './src/index.ts'),
+      formats: ['es'],
       fileName: 'index',
     },
   },

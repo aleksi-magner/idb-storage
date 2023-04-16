@@ -3,12 +3,12 @@
   "compilerOptions": {
     /* Modules */
     "rootDir": "src",
-    "module": "ESNext",
+    "module": "esnext",
     "moduleResolution": "node",
 
     /* Language and Environment */
-    "target": "es2017",
-    "lib": ["ES2017", "DOM", "DOM.Iterable"],
+    "target": "es2015",
+    "lib": ["ES2015", "DOM", "DOM.Iterable"],
     "useDefineForClassFields": true,
 
     /* Emit */
