@@ -15,7 +15,7 @@ export default defineConfig({
     reportCompressedSize: true,
     lib: {
       entry: resolve(__dirname, './src/index.ts'),
-      formats: ['es'],
+      formats: ['cjs'],
       fileName: 'index',
     },
   },

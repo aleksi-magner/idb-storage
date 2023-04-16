@@ -20,7 +20,6 @@
 
     /* Interop Constraints */
     "esModuleInterop": true,
-    "isolatedModules": true,
     "forceConsistentCasingInFileNames": true,
 
     /* Type Checking */

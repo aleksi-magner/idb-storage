@@ -1,3 +1,5 @@
+type Init = (dbName: string, storeName: string, version?: number) => Promise<void>;
+
 type IDBMethods = {
   /**
    * Получение одного или нескольких значений по ключам из хранилища IndexedDB.
@@ -80,7 +82,7 @@ const transactionRequest = (request: IDBTransaction): Promise<undefined> =>
  *   app.mount('#app');
  * });
  */
-export const initDatabase = (
+const initDatabase: Readonly<Init> = (
   dbName: string,
   storeName: string,
   version: number = 1,
@@ -106,8 +108,10 @@ export const initDatabase = (
     });
 };
 
+exports.initDatabase = initDatabase;
+
 /** Закрытие и удаление базы данных */
-export const deleteDatabase = (): void => {
+const deleteDatabase: Readonly<() => void> = (): void => {
   if (!DB) {
     return;
   }
@@ -118,6 +122,8 @@ export const deleteDatabase = (): void => {
 
   window.indexedDB.deleteDatabase(name);
 };
+
+exports.deleteDatabase = deleteDatabase;
 
 /** Проверка инициализации базы данных */
 const checkDB = (): void => {
@@ -150,7 +156,7 @@ const deepClone = (sourceObject: any): any => {
 };
 
 /** Служба для управления локальным хранилищем IndexedDB */
-export const idb: Readonly<IDBMethods> = Object.freeze({
+const idb: Readonly<IDBMethods> = Object.freeze({
   get(keys: string | Array<string>): Promise<any | any[]> {
     checkDB();
 
@@ -278,3 +284,5 @@ export const idb: Readonly<IDBMethods> = Object.freeze({
     return entries;
   },
 });
+
+exports.idb = idb;

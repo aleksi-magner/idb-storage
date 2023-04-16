@@ -1,12 +1,12 @@
 {
   "name": "purejs-idb",
   "author": "Aleksey Magner",
-  "version": "1.2.12",
+  "version": "1.2.13",
   "description": "Service for managing IndexedDB local storage.",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git@github.com:aleksi-magner/purejs-idb.git"
+    "url": "git+ssh://git@github.com/aleksi-magner/purejs-idb.git"
   },
   "keywords": [
     "idb",
@@ -16,7 +16,6 @@
     "dist",
     "README.md"
   ],
-  "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
