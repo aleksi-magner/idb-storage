@@ -7,7 +7,7 @@ type IDBMethods = {
    * const token = await idb.get('token'); // value
    * const anyValues = await idb.get(['token', 'user', 'phone']); // [value1, value2, value3]
    */
-  readonly get: (keys: string | Array<string>) => Promise<any | any[]>;
+  readonly get: (keys: string | string[]) => Promise<any | any[]>;
   /**
    * Добавление одного или нескольких значений по ключам в хранилище IndexedDB
    * @example
@@ -17,7 +17,7 @@ type IDBMethods = {
    *   phone: 79991234567,
    * });
    */
-  readonly set: (pairs: { [p: string]: unknown }) => Promise<undefined>;
+  readonly set: (pairs: { [key: string]: unknown }) => Promise<undefined>;
   /**
    * Обновление значения по ключу в хранилище IndexedDB
    * @example
@@ -32,7 +32,7 @@ type IDBMethods = {
    * await idb.delete('token');
    * await idb.delete(['token', 'user', 'phone']);
    */
-  readonly delete: (keys: string | Array<string>) => Promise<undefined>;
+  readonly delete: (keys: string | string[]) => Promise<undefined>;
   /** Очистка всех значений в хранилище IndexedDB */
   readonly clear: () => Promise<undefined>;
   /**
@@ -138,7 +138,7 @@ const deepClone = (sourceObject: any): any => {
     return new Date(<Date>sourceObject);
   }
 
-  const clone: Array<any> | { [key: string]: any } = Array.isArray(sourceObject)
+  const clone: any[] | { [key: string]: any } = Array.isArray(sourceObject)
     ? [].concat(<[]>sourceObject)
     : Object.assign({}, <{}>sourceObject);
 
@@ -153,7 +153,7 @@ const deepClone = (sourceObject: any): any => {
 
 /** Служба для управления локальным хранилищем IndexedDB */
 export const idb: Readonly<IDBMethods> = Object.freeze({
-  get(keys: string | Array<string>): Promise<any | any[]> {
+  get(keys: string | string[]): Promise<any | any[]> {
     checkDB();
 
     const store: IDBObjectStore = DB.transaction(objectStoreName, 'readonly').objectStore(
@@ -217,7 +217,7 @@ export const idb: Readonly<IDBMethods> = Object.freeze({
 
     return transactionRequest(store.transaction);
   },
-  delete(keys: string | Array<string>): Promise<undefined> {
+  delete(keys: string | string[]): Promise<undefined> {
     checkDB();
 
     const store: IDBObjectStore = DB.transaction(objectStoreName, 'readwrite').objectStore(
@@ -270,7 +270,7 @@ export const idb: Readonly<IDBMethods> = Object.freeze({
 
     const entries: { [key: string]: unknown } = {};
 
-    const keys: Array<string> = await objectStoreRequest(store.getAllKeys());
+    const keys: string[] = await objectStoreRequest(store.getAllKeys());
     const values: unknown[] = await objectStoreRequest(store.getAll());
 
     keys.forEach((key: string, index: number): void => {
