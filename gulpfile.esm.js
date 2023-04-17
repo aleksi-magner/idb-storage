@@ -8,8 +8,8 @@ const ts = () =>
     .pipe(plumber())
     .pipe(
       tsc({
-        target: 'ES5',
-        lib: ['ES2015', 'DOM', 'DOM.Iterable'],
+        target: 'ESNext',
+        lib: ['ESNext', 'DOM', 'DOM.Iterable'],
         declaration: true,
       }),
     )
