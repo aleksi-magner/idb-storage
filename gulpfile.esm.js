@@ -8,8 +8,8 @@ const ts = () =>
     .pipe(plumber())
     .pipe(
       tsc({
-        target: 'ESNext',
-        lib: ['ESNext', 'DOM', 'DOM.Iterable'],
+        target: 'ES6',
+        lib: ['ES6', 'DOM', 'DOM.Iterable'],
         declaration: true,
       }),
     )
@@ -27,7 +27,7 @@ const js = () =>
           android: '58',
           chrome: '58',
           edge: '79',
-          firefox: '51',
+          firefox: '54',
           ios: '10.3',
           opera: '45',
           safari: '10.1',
