@@ -17,7 +17,7 @@ describe('idb', () => {
     deleteDatabase();
   });
 
-  test('deleteDatabase', async () => {});
+  test('deleteDatabase', () => {});
 
   test('initDatabase', async () => {
     try {
