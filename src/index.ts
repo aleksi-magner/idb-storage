@@ -274,7 +274,7 @@ export const idb: Readonly<IDBMethods> = Object.freeze({
     const values: unknown[] = await objectStoreRequest(store.getAll());
 
     keys.forEach((key: string, index: number): void => {
-      entries[key] = values[index];
+      entries[key] = values.at(index);
     });
 
     return entries;
