@@ -1,5 +1,13 @@
+/**
+ * Инициализация сервиса. Открытие базы данных
+ * @example
+ * initDatabase('any@database.name', 'any-store-name', 42).then(() => {
+ *   app.mount('#app');
+ * });
+ */
 type Init = (dbName: string, storeName: string, version?: number) => Promise<void>;
 
+/** Служба для управления локальным хранилищем IndexedDB */
 type IDBMethods = {
   /**
    * Получение одного или нескольких значений по ключам из хранилища IndexedDB.
@@ -17,7 +25,7 @@ type IDBMethods = {
    *   phone: 79991234567,
    * });
    */
-  readonly set: (pairs: { [key: string]: unknown }) => Promise<undefined>;
+  readonly set: (pairs: Record<string, unknown>) => Promise<undefined>;
   /**
    * Обновление значения по ключу в хранилище IndexedDB
    * @example
@@ -58,7 +66,7 @@ type IDBMethods = {
    * //   key3: 'value3',
    * // }
    */
-  readonly entries: () => Promise<{ [key: string]: any }>;
+  readonly entries: () => Promise<Record<string, any>>;
 };
 
 let objectStoreName: string;
@@ -75,13 +83,6 @@ const transactionRequest = (request: IDBTransaction): Promise<undefined> =>
     request.oncomplete = () => resolve(undefined);
   });
 
-/**
- * Инициализация сервиса. Открытие базы данных
- * @example
- * initDatabase('any@database.name', 'any-store-name', 42).then(() => {
- *   app.mount('#app');
- * });
- */
 export const initDatabase: Init = (
   dbName: string,
   storeName: string,
@@ -138,7 +139,7 @@ const deepClone = (sourceObject: any): any => {
     return new Date(<Date>sourceObject);
   }
 
-  const clone: any[] | { [key: string]: any } = Array.isArray(sourceObject)
+  const clone: any[] | Record<string, any> = Array.isArray(sourceObject)
     ? [].concat(<[]>sourceObject)
     : Object.assign({}, <{}>sourceObject);
 
@@ -151,7 +152,6 @@ const deepClone = (sourceObject: any): any => {
   return clone;
 };
 
-/** Служба для управления локальным хранилищем IndexedDB */
 export const idb: Readonly<IDBMethods> = Object.freeze({
   get(keys: string | string[]): Promise<any | any[]> {
     checkDB();
@@ -166,7 +166,7 @@ export const idb: Readonly<IDBMethods> = Object.freeze({
 
     return objectStoreRequest(store.get(keys));
   },
-  set(pairs: { [key: string]: unknown }): Promise<undefined> {
+  set(pairs: Record<string, unknown>): Promise<undefined> {
     const invalid: boolean = [
       !pairs,
       typeof pairs !== 'object',
@@ -261,14 +261,14 @@ export const idb: Readonly<IDBMethods> = Object.freeze({
 
     return objectStoreRequest(store.getAll());
   },
-  async entries(): Promise<{ [key: string]: any }> {
+  async entries(): Promise<Record<string, any>> {
     checkDB();
 
     const store: IDBObjectStore = DB.transaction(objectStoreName, 'readonly').objectStore(
       objectStoreName,
     );
 
-    const entries: { [key: string]: unknown } = {};
+    const entries: Record<string, unknown> = {};
 
     const keys: string[] = await objectStoreRequest(store.getAllKeys());
     const values: unknown[] = await objectStoreRequest(store.getAll());
