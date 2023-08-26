@@ -1,3 +1,17 @@
+let objectStoreName: string;
+let DB: IDBDatabase;
+
+const objectStoreRequest = (request: IDBRequest | IDBOpenDBRequest): Promise<any> =>
+  new Promise((resolve, reject): void => {
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(`[IndexedDB]. ${request.error}`);
+  });
+
+const transactionRequest = (request: IDBTransaction): Promise<undefined> =>
+  new Promise(resolve => {
+    request.oncomplete = () => resolve(undefined);
+  });
+
 /**
  * Инициализация сервиса. Открытие базы данных
  * @example
@@ -5,17 +19,84 @@
  *   app.mount('#app');
  * });
  */
-type Init = (dbName: string, storeName: string, version?: number) => Promise<void>;
+export type Init = (dbName: string, storeName: string, version?: number) => Promise<void>;
+
+export const initDatabase: Init = async (
+  dbName: string,
+  storeName: string,
+  version: number = 1,
+): Promise<void> => {
+  if (!dbName || !storeName) {
+    throw new Error('[IndexedDB]. The service has not been initialized. Set name');
+  }
+
+  objectStoreName = storeName;
+
+  const DBOpenRequest: IDBOpenDBRequest = window.indexedDB.open(dbName, version);
+
+  DBOpenRequest.onupgradeneeded = (): void => {
+    DBOpenRequest.result.createObjectStore(objectStoreName);
+  };
+
+  try {
+    DB = await objectStoreRequest(DBOpenRequest);
+  } catch (error: any) {
+    throw new Error(error);
+  }
+};
+
+/** Закрытие и удаление базы данных */
+export const deleteDatabase = (): void => {
+  if (!DB) {
+    return;
+  }
+
+  const { name } = DB;
+
+  DB.close();
+
+  window.indexedDB.deleteDatabase(name);
+};
+
+/** Проверка инициализации базы данных */
+const checkDB = (): void => {
+  if (!DB) {
+    throw new Error(
+      '[IndexedDB]. The service has not been initialized. Run initDatabase(<DBName>, <StoreName>)',
+    );
+  }
+};
+
+/** Рекурсивное (глубокое) копирование объекта (массива) */
+const deepClone = (sourceObject: any): any => {
+  if (!sourceObject || typeof sourceObject !== 'object') {
+    return sourceObject;
+  } else if (sourceObject instanceof Date) {
+    return new Date(sourceObject);
+  }
+
+  const clone: any[] | Record<string, any> = Array.isArray(sourceObject)
+    ? [].concat(<[]>sourceObject)
+    : Object.assign({}, <{}>sourceObject);
+
+  Object.keys(clone).forEach((key: string | number): void => {
+    const value = sourceObject[key];
+
+    clone[key] = typeof value === 'object' ? deepClone(value) : value;
+  });
+
+  return clone;
+};
 
 /** Служба для управления локальным хранилищем IndexedDB */
-type IDBMethods = {
+export type IDBMethods = {
   /**
    * Получение одного или нескольких значений по ключам из хранилища IndexedDB.
    * @example
    * const token = await idb.get('token'); // value
    * const anyValues = await idb.get(['token', 'user', 'phone']); // [value1, value2, value3]
    */
-  readonly get: (keys: string | string[]) => Promise<any | any[]>;
+  readonly get: (keys: string | string[]) => Promise<any>;
   /**
    * Добавление одного или нескольких значений по ключам в хранилище IndexedDB
    * @example
@@ -69,91 +150,8 @@ type IDBMethods = {
   readonly entries: () => Promise<Record<string, any>>;
 };
 
-let objectStoreName: string;
-let DB: IDBDatabase;
-
-const objectStoreRequest = (request: IDBRequest | IDBOpenDBRequest): Promise<any> =>
-  new Promise((resolve, reject): void => {
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(`[IndexedDB]. ${request.error}`);
-  });
-
-const transactionRequest = (request: IDBTransaction): Promise<undefined> =>
-  new Promise(resolve => {
-    request.oncomplete = () => resolve(undefined);
-  });
-
-export const initDatabase: Init = (
-  dbName: string,
-  storeName: string,
-  version: number = 1,
-): Promise<void> => {
-  if (!dbName || !storeName) {
-    throw new Error('[IndexedDB]. The service has not been initialized. Set name');
-  }
-
-  objectStoreName = storeName;
-
-  const DBOpenRequest: IDBOpenDBRequest = window.indexedDB.open(dbName, version);
-
-  DBOpenRequest.onupgradeneeded = (): void => {
-    DBOpenRequest.result.createObjectStore(objectStoreName);
-  };
-
-  return objectStoreRequest(DBOpenRequest)
-    .then((db: IDBDatabase): void => {
-      DB = db;
-    })
-    .catch(error => {
-      throw new Error(error);
-    });
-};
-
-/** Закрытие и удаление базы данных */
-export const deleteDatabase = (): void => {
-  if (!DB) {
-    return;
-  }
-
-  const { name } = DB;
-
-  DB.close();
-
-  window.indexedDB.deleteDatabase(name);
-};
-
-/** Проверка инициализации базы данных */
-const checkDB = (): void => {
-  if (!DB) {
-    throw new Error(
-      '[IndexedDB]. The service has not been initialized. Run initDatabase(<DBName>, <StoreName>)',
-    );
-  }
-};
-
-/** Рекурсивное (глубокое) копирование объекта (массива) */
-const deepClone = (sourceObject: any): any => {
-  if (!sourceObject || typeof sourceObject !== 'object') {
-    return sourceObject;
-  } else if (sourceObject instanceof Date) {
-    return new Date(<Date>sourceObject);
-  }
-
-  const clone: any[] | Record<string, any> = Array.isArray(sourceObject)
-    ? [].concat(<[]>sourceObject)
-    : Object.assign({}, <{}>sourceObject);
-
-  Object.keys(clone).forEach((key: string | number): void => {
-    const value = sourceObject[key];
-
-    clone[key] = typeof value === 'object' ? deepClone(value) : value;
-  });
-
-  return clone;
-};
-
 export const idb: Readonly<IDBMethods> = Object.freeze({
-  get(keys: string | string[]): Promise<any | any[]> {
+  get(keys: string | string[]): Promise<any> {
     checkDB();
 
     const store: IDBObjectStore = DB.transaction(objectStoreName, 'readonly').objectStore(
